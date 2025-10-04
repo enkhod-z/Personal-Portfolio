@@ -5,6 +5,10 @@
     box-sizing: border-box;
 }
 
+main {
+    padding-top: 80px; /* adjust to your navbar's height */
+}
+
 /* Base Styles */
 body {
     font-family: 'Roboto', sans-serif;
@@ -15,43 +19,47 @@ body {
 
 /* Header & Navigation */
 header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;               
     background: #ffffff;
-    padding: 15px 0;
     border-bottom: 1px solid #ddd;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
 }
 
-nav {
+#navBar {
+    max-width: 1200px;
+    margin: 0 auto;            /* centers inside header */
+    padding: 15px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
 }
 
-nav h1 {
+#navBar h1 {
     color: #007bff; /* Primary color */
     font-weight: 700;
 }
 
-nav ul {
+#navBar ul {
     list-style: none;
     display: flex;
 }
 
-nav ul li {
+#navBar ul li {
     margin-left: 20px;
 }
 
-nav ul li a {
+#navBar ul li a {
     text-decoration: none;
     color: #333;
     font-weight: 400;
     transition: color 0.3s ease;
 }
 
-nav ul li a:hover {
+#navBar ul li a:hover {
     color: #007bff;
 }
 
