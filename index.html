@@ -3,103 +3,377 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Name - Personal Portfolio</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Sarah Chen | Data-Driven Analyst Portfolio</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Set default font to Inter and smooth scrolling for navigation links */
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc; /* Light background for a clean look */
+        }
+        /* Custom style for the skill bar background */
+        .skill-bar-bg {
+            background-color: #e5e7eb;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary-blue': '#4f46e5',
+                        'accent-light': '#eef2ff',
+                    }
+                }
+            }
+        }
+
+        // --- JavaScript for dynamic content and interactions (Mock LLM Call) ---
+        
+        // This function simulates an API call to Gemini (using the placeholder structure)
+        async function getInsightSummary(topic) {
+            const insightOutput = document.getElementById('insight-output');
+            const insightLoader = document.getElementById('insight-loader');
+            
+            insightOutput.innerHTML = '';
+            insightLoader.classList.remove('hidden');
+
+            const systemPrompt = "Act as a world-class financial analyst. Provide a concise, single-paragraph summary of the key findings.";
+            const userQuery = `Find the latest quarterly earnings report for a major tech company and summarize its performance related to ${topic}.`;
+            const apiKey = ""; // Leave as-is
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                tools: [{ "google_search": {} }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+
+            try {
+                // Exponential backoff retry logic
+                for (let attempt = 0; attempt < 3; attempt++) {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        const candidate = result.candidates?.[0];
+                        
+                        if (candidate && candidate.content?.parts?.[0]?.text) {
+                            insightOutput.innerHTML = `<p class="text-gray-700">${candidate.content.parts[0].text}</p>`;
+                            
+                            // Extract and display sources
+                            let sourcesHtml = '';
+                            const groundingMetadata = candidate.groundingMetadata;
+                            if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                                const sources = groundingMetadata.groundingAttributions
+                                    .map(attribution => ({
+                                        uri: attribution.web?.uri,
+                                        title: attribution.web?.title,
+                                    }))
+                                    .filter(source => source.uri && source.title);
+
+                                if (sources.length > 0) {
+                                    sourcesHtml = `<div class="mt-4 border-t pt-3"><h4 class="font-semibold text-sm mb-2 text-gray-600">Sources:</h4><ul class="list-disc list-inside space-y-1 text-sm text-gray-500">`;
+                                    sources.slice(0, 3).forEach(source => { // Limit to top 3 for clean UI
+                                        sourcesHtml += `<li><a href="${source.uri}" target="_blank" class="text-primary-blue hover:underline">${source.title}</a></li>`;
+                                    });
+                                    sourcesHtml += `</ul></div>`;
+                                }
+                            }
+                            insightOutput.innerHTML += sourcesHtml;
+                            break; // Success, exit loop
+                        } else {
+                            insightOutput.innerHTML = '<p class="text-red-500">Could not generate insight. Please try a different topic.</p>';
+                            break;
+                        }
+                    } else if (response.status === 429 && attempt < 2) {
+                        const delay = Math.pow(2, attempt) * 1000;
+                        console.log(`Rate limit exceeded. Retrying in ${delay / 1000}s...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    } else {
+                        throw new Error(`API call failed with status: ${response.status}`);
+                    }
+                }
+
+            } catch (error) {
+                console.error("Error fetching Gemini content:", error);
+                insightOutput.innerHTML = `<p class="text-red-500">An error occurred while fetching the insight. Check the console for details.</p>`;
+            } finally {
+                insightLoader.classList.add('hidden');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('insight-form');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const topic = document.getElementById('insight-topic').value;
+                if (topic.trim()) {
+                    getInsightSummary(topic);
+                }
+            });
+        });
+
+        // Function to render skill bars (for demonstration)
+        function renderSkill(skill, proficiency) {
+            const skillContainer = document.getElementById('skills-container');
+            const width = proficiency; // Assuming proficiency is a percentage string e.g., '90%'
+            const html = `
+                <div class="mb-4">
+                    <div class="flex justify-between mb-1">
+                        <span class="font-medium text-gray-700">${skill}</span>
+                        <span class="text-sm font-semibold text-primary-blue">${width}</span>
+                    </div>
+                    <div class="skill-bar-bg h-2 rounded-full overflow-hidden shadow-inner">
+                        <div class="bg-primary-blue h-full rounded-full" style="width: ${width};"></div>
+                    </div>
+                </div>
+            `;
+            skillContainer.innerHTML += html;
+        }
+
+        window.onload = () => {
+            renderSkill('SQL (PostgreSQL, BigQuery)', '95%');
+            renderSkill('Python (Pandas, Scikit-learn)', '88%');
+            renderSkill('Tableau / Power BI', '92%');
+            renderSkill('A/B Testing & Statistics', '80%');
+            renderSkill('Cloud Platforms (AWS/GCP)', '75%');
+        };
+
+    </script>
 </head>
+
 <body>
-
-    <header>
-        <nav id="navBar">
-            <h1>Enkh-Od Zol-Od</h1>
-            <ul>
-                <li><a href="#about">About</a></li>
-                <li><a href="#skills">Skills</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <section id="hero" class="hero-section">
-        <div class="hero-content">
-            <h2>Hello, I'm Enkh-Od Zol-Od</h2>
-            <p>Information Systems student leveraging Python, SQL, and data visualization to drive efficient business solutions</p>
-            <button id="cta-button">View My Projects</button>
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-md sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo/Name -->
+                <div class="flex-shrink-0">
+                    <span class="text-2xl font-bold text-primary-blue hover:text-indigo-800 transition duration-300">Sarah Chen, Analyst</span>
+                </div>
+                <!-- Navigation Links (Desktop) -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="text-gray-600 hover:text-primary-blue transition duration-150 font-medium">Home</a>
+                    <a href="#about" class="text-gray-600 hover:text-primary-blue transition duration-150 font-medium">About & Skills</a>
+                    <a href="#projects" class="text-gray-600 hover:text-primary-blue transition duration-150 font-medium">Projects</a>
+                    <a href="#insights" class="text-gray-600 hover:text-primary-blue transition duration-150 font-medium">Insights</a>
+                    <a href="#contact" class="text-gray-600 hover:text-primary-blue transition duration-150 font-medium">Contact</a>
+                </div>
+            </div>
         </div>
-    </section>
+    </nav>
 
-    <section id="about" class="content-section">
-        <h2>About Me</h2>
-        <p>Information Systems student with a strong interest in data analysis adept at enhancing operational efficiency. Proficient in Python, Java, C++, and data visualization tools such as Pandas and Matplotlib.</p>
-        <p>Committed to leveraging technical skills and a detail-oriented approach to drive business solutions and support data-driven decision-making.</p>
-    </section>
+    <main>
+        <!-- 1. Hero Section -->
+        <section id="home" class="py-20 md:py-32 bg-accent-light">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between">
+                <!-- Text Content -->
+                <div class="md:w-1/2 mb-10 md:mb-0 text-center md:text-left">
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
+                        Translating Data into <span class="text-primary-blue">Actionable Growth</span>
+                    </h1>
+                    <p class="mt-4 text-lg text-gray-600 max-w-lg mx-auto md:mx-0">
+                        Business Intelligence Analyst specializing in financial modeling, predictive analytics, and clear stakeholder communication.
+                    </p>
+                    <div class="mt-8 flex justify-center md:justify-start space-x-4">
+                        <a href="#projects" class="px-6 py-3 bg-primary-blue text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105">
+                            View Portfolio
+                        </a>
+                        <a href="resume.pdf" download class="px-6 py-3 bg-white border border-gray-300 text-primary-blue font-semibold rounded-lg shadow-md hover:bg-gray-100 transition duration-300">
+                            Download Resume
+                        </a>
+                    </div>
+                </div>
+                <!-- Image Placeholder -->
+                <div class="md:w-1/3">
+                    <img src="enkhod-headshot.jfif" 
+                         alt="Professional headshot of Analyst Sarah Chen" 
+                         class="rounded-full shadow-2xl w-48 h-48 sm:w-64 sm:h-64 mx-auto object-cover border-4 border-white">
+                </div>
+            </div>
+        </section>
 
-    <section id="skills" class="content-section">
-        <h2>My Skills</h2>
+        <!-- 2. About & Skills Section -->
+        <section id="about" class="py-16 md:py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-12">About Me & My Toolkit</h2>
 
-        <div class="skill-category">
-            <h3>Data Science & Analytics</h3>
-            <ul class="skill-badges">
-                <li class="data-skill">Python (Pandas, NumPy, Matplotlib)</li>
-                <li class="data-skill">Tableau</li>
-                <li class="data-skill">SQL</li>
-                <li class="data-skill">Excel</li>
-                <li class="data-skill">JupyterBook</li>
-            </ul>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <!-- About Summary -->
+                    <div>
+                        <h3 class="text-2xl font-semibold text-primary-blue mb-4">My Approach</h3>
+                        <p class="text-gray-700 leading-relaxed mb-6">
+                            With five years of experience in the SaaS industry, I bridge the gap between complex datasets and strategic business decisions. My core philosophy is that data storytelling—not just analysis—is the key to unlocking organizational efficiency. I specialize in building robust dashboards and machine learning models that predict key metrics, leading to measurable improvements in ROI and operational speed.
+                        </p>
+                        <p class="text-gray-700 leading-relaxed italic border-l-4 border-primary-blue pl-4">
+                            "Data is not about volume; it's about value. I help teams extract that value."
+                        </p>
+                    </div>
+
+                    <!-- Skills (Dynamically rendered by JS for a cool effect) -->
+                    <div>
+                        <h3 class="text-2xl font-semibold text-primary-blue mb-4">Core Technical Skills</h3>
+                        <div id="skills-container">
+                            <!-- Skill bars will be injected here by the JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Projects/Portfolio Section -->
+        <section id="projects" class="py-16 md:py-24 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-12">Key Analytical Projects</h2>
+                <p class="text-center text-lg text-gray-600 mb-10">Showcasing the problem, methodology, and quantifiable impact of my work.</p>
+
+                <!-- Project Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                    <!-- Project Card 1: Churn Prediction -->
+                    <div class="bg-white rounded-xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition duration-300">
+                        <img src="https://placehold.co/600x400/1d4ed8/ffffff?text=Predictive+Model" 
+                             alt="Graph showing customer churn prediction" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <span class="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-red-100 text-red-700 rounded-full mb-2">Machine Learning</span>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Customer Churn Prediction Engine</h3>
+                            <p class="text-gray-600 text-sm mb-4">Built a Logistic Regression model to identify high-risk accounts, reducing involuntary churn by 18%.</p>
+                            <a href="#" class="text-primary-blue hover:text-indigo-700 font-semibold flex items-center">
+                                View Case Study
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Project Card 2: Financial Dashboard -->
+                    <div class="bg-white rounded-xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition duration-300">
+                        <img src="https://placehold.co/600x400/059669/ffffff?text=Executive+Dashboard" 
+                             alt="Mockup of a financial metrics dashboard" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <span class="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-green-100 text-green-700 rounded-full mb-2">BI & Viz</span>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Automated Revenue Forecasting</h3>
+                            <p class="text-gray-600 text-sm mb-4">Developed a real-time Tableau dashboard that integrated 3 data sources, cutting reporting time by 75%.</p>
+                            <a href="#" class="text-primary-blue hover:text-indigo-700 font-semibold flex items-center">
+                                View Case Study
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Project Card 3: SQL Optimization -->
+                    <div class="bg-white rounded-xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition duration-300">
+                        <img src="https://placehold.co/600x400/9333ea/ffffff?text=SQL+Query+Optimization" 
+                             alt="Code snippets representing efficient SQL" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <span class="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-purple-100 text-purple-700 rounded-full mb-2">Data Engineering</span>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Warehouse Query Optimization</h3>
+                            <p class="text-gray-600 text-sm mb-4">Optimized 15 core ETL queries, reducing average query runtime from 45s to less than 5 seconds.</p>
+                            <a href="#" class="text-primary-blue hover:text-indigo-700 font-semibold flex items-center">
+                                View Case Study
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        
+        <!-- 4. Insights (Simulated LLM Interaction Section) -->
+        <section id="insights" class="py-16 md:py-24 bg-white">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-6">Analyst's Corner: Real-Time Insights</h2>
+                <p class="text-center text-lg text-gray-600 mb-10">Demonstrating modern analytical prowess using Google's generative models to research and summarize financial news.</p>
+
+                <div class="p-6 sm:p-8 bg-gray-50 rounded-xl shadow-lg border border-gray-200">
+                    <form id="insight-form" class="space-y-4">
+                        <label for="insight-topic" class="block text-lg font-medium text-gray-700">Topic of Interest:</label>
+                        <input type="text" id="insight-topic" placeholder="e.g., 'recent trends in e-commerce profitability'"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary-blue focus:border-primary-blue transition duration-150" required>
+                        <button type="submit" 
+                                class="w-full md:w-auto px-6 py-3 bg-primary-blue text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
+                            Generate Live Summary
+                        </button>
+                    </form>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-300">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Summary Output:</h3>
+                        <div id="insight-loader" class="hidden text-center p-4">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-blue"></div>
+                            <p class="mt-2 text-primary-blue">Analyzing current market data...</p>
+                        </div>
+                        <div id="insight-output" class="bg-white p-4 rounded-lg shadow-inner min-h-[100px] flex items-center justify-center">
+                            <p class="text-gray-400">Enter a topic above to generate a professional insight summary.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+    </main>
+
+    <!-- 5. Footer & Contact Section -->
+    <footer id="contact" class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-gray-700 pb-8 mb-8">
+                <!-- Contact Info -->
+                <div>
+                    <h4 class="text-xl font-bold mb-4 text-primary-blue">Connect</h4>
+                    <p class="text-gray-300 mb-2">Email: sarah.chen.analyst@example.com</p>
+                    <p class="text-gray-300">Phone: (555) 123-4567</p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-xl font-bold mb-4 text-primary-blue">Quick Navigation</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#about" class="text-gray-300 hover:text-white transition duration-150">About Me</a></li>
+                        <li><a href="#projects" class="text-gray-300 hover:text-white transition duration-150">My Portfolio</a></li>
+                        <li><a href="#insights" class="text-gray-300 hover:text-white transition duration-150">Live Insights</a></li>
+                    </ul>
+                </div>
+
+                <!-- Social Links -->
+                <div>
+                    <h4 class="text-xl font-bold mb-4 text-primary-blue">Follow My Work</h4>
+                    <div class="flex space-x-4">
+                        <!-- LinkedIn Icon -->
+                        <a href="https://linkedin.com/in/sarahchen" target="_blank" class="text-gray-300 hover:text-white transition duration-150">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.522-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        </a>
+                        <!-- GitHub Icon -->
+                        <a href="https://github.com/sarahchendata" target="_blank" class="text-gray-300 hover:text-white transition duration-150">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.337 3.43 9.878 8.205 11.455.6.111.825-.256.825-.565 0-.279-.011-1.015-.011-2.003-3.337.724-4.042-1.61-4.042-1.61-.545-1.385-1.33-1.756-1.33-1.756-1.09-.745.083-.73.083-.73 1.205.084 1.838 1.238 1.838 1.238 1.07 1.834 2.809 1.306 3.493.998.108-.77.418-1.306.762-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.379 1.238-3.22-.124-.302-.54-1.524.118-3.18 0 0 1.008-.322 3.301 1.238.957-.266 1.983-.399 3.003-.404 1.02.005 2.046.138 3.003.404 2.292-1.56 3.3-1.238 3.3-1.238.658 1.656.242 2.878.118 3.18.773.841 1.238 1.91 1.238 3.22 0 4.611-2.801 5.626-5.474 5.925.42.36.816 1.096.816 2.218 0 1.605-.011 2.899-.011 3.28 0 .307.224.678.825.56C20.57 21.879 24 17.336 24 12c0-6.627-5.373-12-12-12z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center text-gray-500 text-sm">
+                &copy; 2024 Sarah Chen. Built with Tailwind CSS.
+            </div>
         </div>
-
-        <div class="skill-category">
-            <h3>Programming</h3>
-            <ul class="skill-badges">
-                <li class="prog-skill">Java</li>
-                <li class="prog-skill">C++</li>
-                <li class="prog-skill">Dart</li>
-                <li class="prog-skill">Flutter</li>
-                <li class="prog-skill">HTML</li>
-                <li class="prog-skill">CSS</li>
-            </ul>
-        </div>
-
-        <div class="skill-category">
-            <h3>Tools/Databases</h3>
-            <ul class="skill-badges">
-                <li class="tool-skill">Visual Studio</li>
-                <li class="tool-skill">Git/Github</li>
-                <li class="tool-skill">Quickbooks</li>
-            </ul>
-        </div>
-
-    </section>
-
-    <section id="projects" class="content-section">
-        <h2>Selected Projects</h2>
-        <div class="project-card">
-            <h3>Project Title 1: **[Project Name]**</h3>
-            <p>A brief description of the project and what it does. **[Type of project]**</p>
-            <a href="[Link to GitHub]" target="_blank">Code (GitHub)</a> | <a href="[Live Demo Link]" target="_blank">Live Demo</a>
-        </div>
-        <div class="project-card">
-            <h3>Project Title 2: **[Project Name]**</h3>
-            <p>A brief description of the project and what it does. **[Type of project]**</p>
-            <a href="[Link to GitHub]" target="_blank">Code (GitHub)</a> | <a href="[Live Demo Link]" target="_blank">Live Demo</a>
-        </div>
-    </section>
-
-    <section id="contact" class="content-section">
-        <h2>Get In Touch</h2>
-        <p>I'm open to new opportunities and collaborations. Feel free to connect!</p>
-        <div class="contact-links">
-            <a href="mailto:enkhod.zolod@gmail.com">Email</a>
-            <a href="www.linkedin.com/in/enkh-od-zol-od" target="_blank">LinkedIn</a>
-            <a href="https://github.com/enkhod-z" target="_blank">GitHub</a>
-        </div>
-    </section>
-
-    <footer>
-        <p>&copy; <span id="current-year"></span> Enkh-Od Zol-Od. All rights reserved.</p>
     </footer>
-
-    <script src="script.js"></script>
 </body>
 </html>
