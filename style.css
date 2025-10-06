@@ -39,7 +39,7 @@ header {
 }
 
 #navBar h1 {
-    color: #007bff; /* Primary color */
+    color: #3498db; /* Primary color */
     font-weight: 700;
 }
 
@@ -60,7 +60,7 @@ header {
 }
 
 #navBar ul li a:hover {
-    color: #007bff;
+    color: #3498db;
 }
 
 /* Section Styles */
@@ -72,7 +72,7 @@ header {
 }
 
 .content-section h2 {
-    color: #007bff;
+    color: #3498db;
     margin-bottom: 30px;
     font-weight: 700;
     font-size: 2.5rem;
@@ -80,7 +80,7 @@ header {
 
 /* Hero Section (Introduction) */
 .hero-section {
-    background: #e9efff; /* Light blue background */
+    background: #d4e6f1; /* Light blue background */
     min-height: 70vh;
     display: flex;
     justify-content: center;
@@ -99,7 +99,7 @@ header {
 }
 
 #cta-button {
-    background-color: #007bff;
+    background-color: #3498db;
     color: white;
     padding: 12px 25px;
     border: none;
@@ -110,27 +110,89 @@ header {
 }
 
 #cta-button:hover {
-    background-color: #0056b3;
+    background-color: #2980b9;
     transform: translateY(-2px);
 }
 
 /* Skills Section */
 .skills-list {
+    /* Remove old list styles, this container is now just for spacing */
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 900px;
+}
+
+/* 2. Styling for each category (Data, Programming, Tools) */
+.skill-category {
+    margin-bottom: 40px;
+    text-align: left;
+}
+
+.skill-category h3 {
+    font-size: 1.5rem;
+    color: #333; /* Darker text for category heading */
+    margin-bottom: 15px;
+    border-bottom: 2px solid #3498db; /* Subtle blue separator */
+    display: inline-block;
+    padding-bottom: 5px;
+    font-weight: 700;
+}
+
+
+/* 3. Container for the individual badges */
+.skill-badges {
     list-style: none;
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
+    gap: 10px; /* Space between the badges */
     padding: 0;
+    margin: 0;
 }
 
-.skills-list li {
-    background: #fff;
-    padding: 10px 15px;
-    border-radius: 5px;
-    border-left: 5px solid #007bff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    font-weight: 400;
+/* 4. Base styling for ALL skill badges (li) */
+.skill-badges li {
+    display: inline-block;
+
+    padding: 8px 15px;
+    border-radius: 20px; 
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* 5. Styling for PRIMARY skills (Data Science) - Bold Blue Background */
+.data-skill {
+    background-color: #3498db;
+    color: white;
+    border: 1px solid #3498db;
+}
+.data-skill:hover {
+    background-color: #2980b9;
+    cursor: default;
+}
+
+/* 6. Styling for SECONDARY skills (Programming) - Blue Border */
+.prog-skill {
+    background-color: #f8f9fa;
+    color: #3498db;
+    border: 1px solid #3498db;
+}
+.prog-skill:hover {
+    background-color: #e9ecef;
+    cursor: default;
+}
+
+/* 7. Styling for TOOLS - Neutral Look */
+.tool-skill {
+    background-color: #e9ecef;
+    color: #333;
+    border: 1px solid #ced4da;
+}
+.tool-skill:hover {
+    background-color: #dee2e6;
+    cursor: default;
 }
 
 /* Projects Section */
@@ -144,7 +206,7 @@ header {
 }
 
 .project-card h3 {
-    color: #007bff;
+    color: #3498db;
     margin-bottom: 10px;
 }
 
