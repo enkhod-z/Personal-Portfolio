@@ -38,37 +38,37 @@
         // --- PROJECT DATA DEFINITION (UPDATED FOR ALL THREE PROJECTS) ---
         const projects = {
             'churn-prediction': {
-                title: 'Customer Churn Prediction Engine',
+                title: 'Heart Disease Dashboard',
                 problem: "The SaaS company was losing 5% of its subscription revenue quarterly due to preventable customer churn. The challenge was identifying 'at-risk' users early enough for intervention.",
                 data: "Transactional history, support ticket volume, user engagement metrics, and behavioral feature flags (SQL, BigQuery).",
                 methodology: "Performed extensive feature engineering, including calculating recency/frequency metrics. Trained and compared Logistic Regression and Random Forest models. Logistic Regression provided the best balance of interpretability and accuracy (89% AUC).",
                 impact: "Integrated the model score into the CRM system, automating high-risk alerts for the Customer Success team. This led to a **18% reduction** in involuntary churn within the first six months, saving approximately $1.2M annually.",
                 tools: "Python (Scikit-learn, Pandas), Tableau (Dashboard for CS Team), SQL",
                 result_metric: "18% Churn Reduction",
-                visual_url: "https://placehold.co/800x400/1d4ed8/ffffff?text=Key+Visualization+|+Model+Performance+Graph",
+                visual_url: "https://media.istockphoto.com/id/1448453929/photo/cardiogram-pulse-trace-with-red-heart-on-pastel-blue-background.jpg?s=612x612&w=0&k=20&c=vROYnUeWCFJQ7uAV0Z_H1gQcwtBTygDg0aIB2YggbY0%3D",
                 external_link: "churn_analysis.html" 
             },
             'revenue-forecasting': {
-                title: 'Automated Revenue Forecasting',
+                title: 'Reproductive Health Survey Analysis',
                 problem: "The executive team required highly accurate, near real-time monthly revenue projections to guide budget allocations and sales strategy, replacing a time-intensive manual spreadsheet process.",
                 data: "Historical sales data (3 years), customer contract lengths, marketing spend, and macroeconomic indicators.",
                 methodology: "Implemented a time-series forecasting model (ARIMA/Prophet blend) comparing baseline results against a machine learning approach. The blended model reduced forecast error (MAPE) from 12% to 4.5%.",
                 impact: "Enabled budget adjustments 3 weeks earlier each quarter, directly correlating with a **$500K increase** in allocated marketing efficiency and improved inventory stocking accuracy.",
                 tools: "Power BI (Visualizations), Python (Prophet, Scikit-learn), Azure Data Factory",
                 result_metric: "4.5% MAPE Reduction",
-                visual_url: "https://placehold.co/800x400/059669/ffffff?text=Revenue+Forecast+Dashboard",
-                external_link: "revenue_analysis.html" 
+                visual_url: "https://t3.ftcdn.net/jpg/03/32/32/36/360_F_332323633_UymJGQe9M373FVF3rjoKJoC0faF8y7VJ.jpg",
+                external_link: "RHS_Enkh-Od_Z.html" 
             },
             'sql-optimization': {
-                title: 'Warehouse Query Optimization',
+                title: 'Aviation Data Exploration',
                 problem: "The daily data refresh process was frequently failing or timing out due to highly inefficient, long-running SQL queries, leading to data latency issues for BI consumers.",
                 data: "PostgreSQL query execution plans, AWS Redshift database performance metrics, and application logs.",
                 methodology: "Identified and refactored the top 15 most resource-intensive queries, primarily by implementing proper indexing, optimizing join strategies, and converting correlated subqueries into CTEs.",
                 impact: "Reduced the average query runtime from 45 seconds to under 5 seconds, resulting in a **90% reduction** in ETL latency and eliminated data refresh failures.",
                 tools: "SQL (PostgreSQL, Redshift), AWS Console (Performance Monitoring), Custom Python Scripts",
                 result_metric: "90% ETL Latency Reduction",
-                visual_url: "https://placehold.co/800x400/9333ea/ffffff?text=Query+Performance+Improvement+Chart",
-                external_link: "sql_optimization_report.html" 
+                visual_url: "https://media.istockphoto.com/id/1316894945/photo/aircrafts-grounded-at-the-airport-sunrise.jpg?s=612x612&w=0&k=20&c=Uw7hIQ6LxrTS6s77FWffxziI31Q6NWqqVV8SVUR7ow8%3D",
+                external_link: "Aviation.html" 
             },
         };
 
@@ -318,11 +318,11 @@
 
                         <!-- Project Card 1: Churn Prediction (CLICKABLE) -->
                         <div class="bg-white rounded-xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition duration-300">
-                            <img src="https://placehold.co/600x400/1d4ed8/ffffff?text=Predictive+Model" 
+                            <img src="https://media.istockphoto.com/id/1448453929/photo/cardiogram-pulse-trace-with-red-heart-on-pastel-blue-background.jpg?s=612x612&w=0&k=20&c=vROYnUeWCFJQ7uAV0Z_H1gQcwtBTygDg0aIB2YggbY0%3D" 
                                  alt="Graph showing customer churn prediction" class="w-full h-48 object-cover">
                             <div class="p-6">
                                 <span class="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-red-100 text-red-700 rounded-full mb-2">Machine Learning</span>
-                                <h3 class="text-xl font-bold text-gray-900 mb-2">Customer Churn Prediction Engine</h3>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Heart Disease Dashboard</h3>
                                 <p class="text-gray-600 text-sm mb-4">Built a Logistic Regression model to identify high-risk accounts, reducing involuntary churn by 18%.</p>
                                 <!-- EDITED: Added onclick handler to show detail view -->
                                 <a href="javascript:void(0)" onclick="showProjectDetail('churn-prediction')" class="text-primary-blue hover:text-indigo-700 font-semibold flex items-center">
@@ -336,11 +336,11 @@
 
                         <!-- Project Card 2: Financial Dashboard (CLICKABLE) -->
                         <div class="bg-white rounded-xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition duration-300">
-                            <img src="https://placehold.co/600x400/059669/ffffff?text=Executive+Dashboard" 
+                            <img src="https://t3.ftcdn.net/jpg/03/32/32/36/360_F_332323633_UymJGQe9M373FVF3rjoKJoC0faF8y7VJ.jpg" 
                                  alt="Mockup of a financial metrics dashboard" class="w-full h-48 object-cover">
                             <div class="p-6">
                                 <span class="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-green-100 text-green-700 rounded-full mb-2">BI & Viz</span>
-                                <h3 class="text-xl font-bold text-gray-900 mb-2">Automated Revenue Forecasting</h3>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Reproductive Health Survey Analysis</h3>
                                 <p class="text-gray-600 text-sm mb-4">Developed a real-time Tableau dashboard that integrated 3 data sources, cutting reporting time by 75%.</p>
                                 <!-- EDITED: Added onclick handler to show detail view -->
                                 <a href="javascript:void(0)" onclick="showProjectDetail('revenue-forecasting')" class="text-primary-blue hover:text-indigo-700 font-semibold flex items-center">
@@ -354,11 +354,11 @@
 
                         <!-- Project Card 3: SQL Optimization (CLICKABLE) -->
                         <div class="bg-white rounded-xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition duration-300">
-                            <img src="https://placehold.co/600x400/9333ea/ffffff?text=SQL+Query+Optimization" 
+                            <img src="https://media.istockphoto.com/id/1316894945/photo/aircrafts-grounded-at-the-airport-sunrise.jpg?s=612x612&w=0&k=20&c=Uw7hIQ6LxrTS6s77FWffxziI31Q6NWqqVV8SVUR7ow8%3D" 
                                  alt="Code snippets representing efficient SQL" class="w-full h-48 object-cover">
                             <div class="p-6">
                                 <span class="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-purple-100 text-purple-700 rounded-full mb-2">Data Engineering</span>
-                                <h3 class="text-xl font-bold text-gray-900 mb-2">Warehouse Query Optimization</h3>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Aviation Data Exploration</h3>
                                 <p class="text-gray-600 text-sm mb-4">Optimized 15 core ETL queries, reducing average query runtime from 45s to less than 5 seconds.</p>
                                 <!-- EDITED: Added onclick handler to show detail view -->
                                 <a href="javascript:void(0)" onclick="showProjectDetail('sql-optimization')" class="text-primary-blue hover:text-indigo-700 font-semibold flex items-center">
@@ -509,7 +509,7 @@
                 </a>
                 
                 <button onclick="hideProjectDetail()" class="px-8 py-3 bg-gray-200 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-300 transition duration-300 w-full md:w-auto">
-                    Close Case Study
+                    Close Project
                 </button>
             </div>
         </div>
